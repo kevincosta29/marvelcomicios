@@ -41,9 +41,9 @@ In the image below can see some screenshots of the application in **Dark** and *
 
 ## Demo
 
-Quick demo of the application and the functionality
+Quick demo of the application and the functionality in [YouTube](https://youtu.be/2eCF1Wql9gM)
 
 [![Demo app](https://img.youtube.com/vi/2eCF1Wql9gM/0.jpg)](https://youtu.be/2eCF1Wql9gM)
 
 
-Copyright © 2021 Kevin Costa. All rights reserved.
+**Copyright © 2021 Kevin Costa. All rights reserved.**
