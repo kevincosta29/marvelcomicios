@@ -1,0 +1,22 @@
+/* 
+  Localizable.strings
+  Marvel Comic
+
+  Created by Kevin Costa on 25/8/21.
+  Copyright © 2021 Kevin Costa. All rights reserved.
+*/
+
+
+defaultErrorMsg = "Se ha producido un error. Por favor, vuelva a intentarlo más tarde.";
+
+RETRY = "Pulsa aquí para volver a intentarlo";
+
+//////////////////////////////////////////////////////////////////////////
+//////////////////////        MARVEL COMIC        ////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+character.section.comics = "Comics";
+character.section.series = "Series";
+character.section.stories = "Histórias";
+character.title = "Personajes";
+

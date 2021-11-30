@@ -1,0 +1,9 @@
+/* 
+  InfoPlist.strings
+  Marvel Comic
+
+  Created by Kevin Costa on 25/8/21.
+  Copyright © 2021 Kevin Costa. All rights reserved.
+*/
+
+CFBundleDisplayName = "Marvel Comic";
