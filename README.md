@@ -14,7 +14,6 @@ This project based in the Marvel [API](https://developer.marvel.com/docs), list 
 This app is a simple demo to show the functionality of the API with iOS.
 
 ## Important
----
 
 To use API of Marvel you should create account and generate an API key and configure the file [AppConfig.swift](https://github.com/kevincosta29/marvelcomicios/blob/main/marvelcomicios/Common/AppConfig.swift), changing for your created API key.
 
@@ -26,7 +25,6 @@ let PRIVATE_KEY                         : String        = ""
 And the minimum level of iOS for this app is **13.0**.
 
 ## Implemented functionality
----
 
 1. Using **MVC** patron for implement the software.
 2. Native implemented network with using [Alamofire](https://github.com/Alamofire/Alamofire).
@@ -34,7 +32,6 @@ And the minimum level of iOS for this app is **13.0**.
 4. Dark mode fully operative.
 
 ## Screensshots
----
 
 In the image below can see some screenshots of the application in **Dark** and **Light** mode.
 
@@ -43,7 +40,6 @@ In the image below can see some screenshots of the application in **Dark** and *
 ![Light mode](readme-resources/light.png)
 
 ## Demo
----
 
 Quick demo of the application and the functionality
 
