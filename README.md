@@ -1,6 +1,16 @@
+<br>
+<p align="center">
+<img src="readme-resources/icon.png" class="center" alt="drawing" width="300"/>
+</p>
+<br>
+
 # Marvel Comics
 
-This project based in the Marvel [API](https://developer.marvel.com/docs), list differents comics with information like:
+[![Swift](https://img.shields.io/badge/Swift-5.3_5.4_5.5-orange?style=flat-square)](https://img.shields.io/badge/Swift-5.3_5.4_5.5-Orange?style=flat-square) 
+[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Alamofire.svg?style=flat-square)](https://img.shields.io/cocoapods/v/Alamofire.svg)
+[![Platforms](https://img.shields.io/badge/Platforms-iOS-yellowgreen?style=flat-square)](https://img.shields.io/badge/Platforms-iOS-Green?style=flat-square)
+
+This project based on the Marvel [API](https://developer.marvel.com/docs), lists differents comics with information like:
 
 - List characters
 - Detail of character (image, information...)
@@ -15,18 +25,18 @@ This app is a simple demo to show the functionality of the API with iOS.
 
 ## Important
 
-To use API of Marvel you should create account and generate an API key and configure the file [AppConfig.swift](https://github.com/kevincosta29/marvelcomicios/blob/main/marvelcomicios/Common/AppConfig.swift), changing for your created API key.
+To use Marvel API you should create an account and generate an API key and configure the file [AppConfig.swift](https://github.com/kevincosta29/marvelcomicios/blob/main/marvelcomicios/Common/AppConfig.swift), changing your created API key.
 
 ``` Swift
 let PUBLIC_KEY                          : String        = ""
 let PRIVATE_KEY                         : String        = ""
 ```
 
-And the minimum level of iOS for this app is **13.0**.
+And the minimum level of iOS VERSION for this app is **13.0**.
 
 ## Implemented functionality
 
-1. Using **MVC** patron for implement the software.
+1. Using **MVC** patron to implement the software.
 2. Native implemented network with using [Alamofire](https://github.com/Alamofire/Alamofire).
 3. Animations with [Lottie](https://lottiefiles.com).
 4. Dark mode fully operative.
@@ -42,8 +52,7 @@ In the image below can see some screenshots of the application in **Dark** and *
 ## Demo
 
 Quick demo of the application and the functionality in [YouTube](https://youtu.be/2eCF1Wql9gM).
+
 [![Demo app](readme-resources/cover.png)](https://youtu.be/2eCF1Wql9gM)
-
-
 
 **Copyright © 2021 Kevin Costa. All rights reserved.**
