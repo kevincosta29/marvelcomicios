@@ -95,7 +95,7 @@ class WebViewC: BaseC {
         webView.load(URLRequest(url: url))
     }
 	
-	private func showView(type: viewType, mssgError: String? = "") {
+    override func showView(type: ViewType, mssgError: String? = "") {
         switch type {
         case .viewContent:
             UIView.animate(withDuration: FADE_IN, animations: {

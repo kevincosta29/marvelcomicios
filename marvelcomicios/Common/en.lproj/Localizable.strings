@@ -8,7 +8,7 @@
 
 
 defaultErrorMsg = "Se ha producido un error. Por favor, vuelva a intentarlo más tarde.";
-
+error.sessionExpired = "La sesión ha caducado";
 RETRY = "Pulsa aquí para volver a intentarlo";
 
 //////////////////////////////////////////////////////////////////////////

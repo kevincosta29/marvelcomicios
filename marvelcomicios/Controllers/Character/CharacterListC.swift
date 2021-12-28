@@ -26,14 +26,12 @@ class CharacterListC: BaseC {
     
 	//-----------------------
 	// MARK: VARIABLES
-	// MARK: ============
 	//-----------------------
 	
-    private var arrayCharacters: [Character] = []
+    private var viewModel: CharacterListViewModel!
 	
 	//-----------------------
 	// MARK: CONSTANTS
-	// MARK: ============
 	//-----------------------
 	
 	
@@ -44,6 +42,7 @@ class CharacterListC: BaseC {
 	
 	init() {
 		super.init(nibName: "CharacterListC", bundle: Bundle.main)
+        self.viewModel = CharacterListViewModel(controller: self)
 	}
 	
 	required public init?(coder aDecoder: NSCoder) {
@@ -63,15 +62,23 @@ class CharacterListC: BaseC {
 		//-----------------------------------------------------------------------------//
 		
 		// Do any additional setup after loading the view.
+        bind(to: viewModel)
         
-        wsCharactersList()
-        tableView.addCustomRefresh(action: #selector(wsCharactersList), target: self)
+        tableView.addCustomRefresh(action: #selector(pullToRefreshData), target: self)
 	}
 	
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
+        viewModel.wsGetCharacterList()
 	}
+    
+    private func bind(to viewModel: CharacterListViewModel) {
+        viewModel.refreshData = { [weak self] in
+            self?.tableView.refreshControl?.endRefreshing()
+            self?.tableView.reloadData()
+        }
+    }
 	
 	//-----------------------
 	// MARK: - ACTIONS
@@ -79,20 +86,18 @@ class CharacterListC: BaseC {
 	
     @IBAction func actionBtnRetry(_ sender: Any) {
         showView(type: .viewLoading)
-        wsCharactersList()
+        viewModel.wsGetCharacterList()
     }
 	
 	//-----------------------
 	// MARK: - METHODS
 	//-----------------------
     
-    @objc private func wsCharactersList() {
-        API.shared.ws_Get_Characters { result, error, strMsg, array in
-            self.processWSResponse(strAction: WS_CHARACTERS, result: result, error: error, strMsg: strMsg, array: array)
-        }
+    @objc private func pullToRefreshData() {
+        viewModel.wsGetCharacterList()
     }
-	
-	private func showView(type: viewType, mssgError: String? = "") {
+    
+    override func showView(type: ViewType, mssgError: String? = "") {
         switch type {
         case .viewContent:
             UIView.animate(withDuration: FADE_IN, animations: {
@@ -118,33 +123,7 @@ class CharacterListC: BaseC {
             break
         }
     }
-	
-	//-----------------------
-	// MARK: - DATAMANAGER
-	//-----------------------
-	
-	override func processWSResponse(strAction: String, result: AFResult<Any>, error: NSError?, strMsg: String?, array: [Any]?) {
-		super.processWSResponse(strAction: strAction, result: result, error: error, strMsg: strMsg, array: array)
-        tableView.refreshControl?.endRefreshing()
-		
-		switch result {
-		case .success:
-			if error != nil {
-				print("\(self) >>> processWSResponse\nWS - \(strAction) = OK | Result = KO")
-				showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
-			} else {
-				print("\(self) >>> processWSResponse\nWS - \(strAction) = OK | Result = OK")
-				showView(type: .viewContent)
-                if let arrayObj = array?.first as? [Character] {
-                    self.arrayCharacters = arrayObj
-                }
-                tableView.reloadData()
-			}
-		case .failure:
-			print("\(self) >>> processWSResponse\nWS - \(strAction) = KO | Result = ?")
-			showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
-		}
-	}
+    
 }
 
 	//----------------------------
@@ -154,11 +133,11 @@ class CharacterListC: BaseC {
 extension CharacterListC: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return arrayCharacters.count
+        return viewModel.arrayCharacters.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let object = arrayCharacters[indexPath.row]
+        let object = viewModel.arrayCharacters[indexPath.row]
 		let identifier = "CharacterCell"
 		
 		var cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterCell
@@ -177,7 +156,7 @@ extension CharacterListC: UITableViewDelegate, UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let object = arrayCharacters[indexPath.row]
+        let object = viewModel.arrayCharacters[indexPath.row]
         tableView.deselectRow(at: indexPath, animated: true)
         self.navigationController?.pushViewController(CharacterDetailC(character: object), animated: true)
 	}

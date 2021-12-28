@@ -9,7 +9,7 @@
 import UIKit
 import Alamofire
 
-enum viewType {
+enum ViewType {
     case unknown, viewContent, viewLoading, viewError
 }
 
@@ -17,7 +17,11 @@ enum CharacterDetailSection {
     case header, comics, series
 }
 
-class BaseC: UIViewController, UIGestureRecognizerDelegate {
+protocol BaseControllerProtocol {
+    func showView(type: ViewType, mssgError: String?)
+}
+
+class BaseC: UIViewController, UIGestureRecognizerDelegate, BaseControllerProtocol {
     
     //-----------------------
     // MARK: Variables
@@ -103,6 +107,10 @@ class BaseC: UIViewController, UIGestureRecognizerDelegate {
     // MARK: - METHODS
     //-----------------------
     
+    func showView(type: ViewType, mssgError: String?) {
+        // Do nothing here
+    }
+    
     func restrictRotation(_ restriction: RotationType) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.restrictRotation = restriction
@@ -143,24 +151,6 @@ class BaseC: UIViewController, UIGestureRecognizerDelegate {
         transition.type = CATransitionType.fade
         navigationController?.view.layer.add(transition, forKey: nil)
         navigationController?.pushViewController(vc, animated: false)
-    }
-    
-    //-----------------------
-    // MARK: - DATAMANAGER
-    //-----------------------
-    
-    func processWSResponse(strAction: String, result: AFResult<Any>, error: NSError?, strMsg: String?, array: [Any]?) {
-        
-        switch result {
-        case .success:
-            if error != nil {
-                print("BaseC >>> processWSResponse\nWS = OK | Result = KO")
-            } else {
-                print("BaseC >>> processWSResponse\nWS = OK | Result = OK")
-            }
-        case .failure:
-            print("BaseC >>> processWSResponse\nWS = KO | Result = ?")
-        }
     }
     
 }

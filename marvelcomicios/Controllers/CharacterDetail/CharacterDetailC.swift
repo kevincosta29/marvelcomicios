@@ -30,9 +30,7 @@ class CharacterDetailC: BaseC {
 	//-----------------------
 	
 	private var character: Character!
-    private var arraySections: [CharacterDetailSection] = [.header]
-    private var arrayComics: [Comic] = []
-    private var arraySeries: [Serie] = []
+    private var viewModel: CharacterDetailViewModel!
 	
 	//-----------------------
 	// MARK: CONSTANTS
@@ -48,6 +46,7 @@ class CharacterDetailC: BaseC {
     init(character: Character) {
 		super.init(nibName: "CharacterDetailC", bundle: Bundle.main)
         self.character = character
+        self.viewModel = CharacterDetailViewModel(controller: self)
 	}
 	
 	required public init?(coder aDecoder: NSCoder) {
@@ -69,6 +68,7 @@ class CharacterDetailC: BaseC {
 		//-----------------------------------------------------------------------------//
 		
 		// Do any additional setup after loading the view.
+        bind(to: viewModel)
         tableView.addCustomRefresh(action: #selector(retrieveData), target: self)
         retrieveData()
         
@@ -83,6 +83,13 @@ class CharacterDetailC: BaseC {
 		super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
 	}
+    
+    private func bind(to viewModel: CharacterDetailViewModel) {
+        viewModel.refreshData = { [weak self] in
+            self?.tableView.refreshControl?.endRefreshing()
+            self?.tableView.reloadData()
+        }
+    }
 	
 	//-----------------------
 	// MARK: - ACTIONS
@@ -105,38 +112,11 @@ class CharacterDetailC: BaseC {
     }
     
     @objc private func retrieveData() {
-        wsGetSeries()
-        wsGetComics()
-    }
-    
-    private func wsGetComics() {
-        API.shared.ws_Get_Characters_Comics(characterId: character.id ?? -1) { result, error, strMsg, array in
-            self.processWSResponse(strAction: WS_CHARACTER_COMICS, result: result, error: error, strMsg: strMsg, array: array)
-        }
-    }
-    
-    private func wsGetSeries() {
-        API.shared.ws_Get_Characters_Series(characterId: character.id ?? -1) { result, error, strMsg, array in
-            self.processWSResponse(strAction: WS_CHARACTER_SERIES, result: result, error: error, strMsg: strMsg, array: array)
-        }
-    }
-    
-    private func createContent() {
-        arraySections = [.header]
-        
-        if !arrayComics.isEmpty {
-            arraySections.append(.comics)
-        }
-        
-        if !arraySeries.isEmpty {
-            arraySections.append(.series)
-        }
-        
-        showView(type: .viewContent)
-        tableView.reloadData()
+        viewModel.wsGetComics(id: character.id ?? -1)
+        viewModel.wsGetSeries(id: character.id ?? -1)
     }
 	
-	private func showView(type: viewType, mssgError: String? = "") {
+    override func showView(type: ViewType, mssgError: String? = "") {
         switch type {
         case .viewContent:
             UIView.animate(withDuration: FADE_IN, animations: {
@@ -162,42 +142,7 @@ class CharacterDetailC: BaseC {
             break
         }
     }
-	
-	//-----------------------
-	// MARK: - DATAMANAGER
-	//-----------------------
-	
-	override func processWSResponse(strAction: String, result: AFResult<Any>, error: NSError?, strMsg: String?, array: [Any]?) {
-		super.processWSResponse(strAction: strAction, result: result, error: error, strMsg: strMsg, array: array)
-        tableView.refreshControl?.endRefreshing()
-        
-		switch result {
-		case .success:
-			if error != nil {
-				print("\(self) >>> processWSResponse\nWS - \(strAction) = OK | Result = KO")
-				showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
-			} else {
-				print("\(self) >>> processWSResponse\nWS - \(strAction) = OK | Result = OK")
-                switch strAction {
-                case WS_CHARACTER_COMICS:
-                    if let arrayObj = array?.first as? [Comic] {
-                        self.arrayComics = arrayObj
-                    }
-                case WS_CHARACTER_SERIES:
-                    if let arrayObj = array?.first as? [Serie] {
-                        self.arraySeries = arrayObj
-                    }
-                default:
-                    break
-                }
-                
-                createContent()
-			}
-		case .failure:
-			print("\(self) >>> processWSResponse\nWS - \(strAction) = KO | Result = ?")
-			showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
-		}
-	}
+    
 }
 
 	//----------------------------
@@ -207,11 +152,11 @@ class CharacterDetailC: BaseC {
 extension CharacterDetailC: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return arraySections.count
+        return viewModel.arraySections.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let object = arraySections[indexPath.row]
+        let object = viewModel.arraySections[indexPath.row]
         switch object {
         case .header:
             let identifier = "CharacterImgCell"
@@ -240,9 +185,9 @@ extension CharacterDetailC: UITableViewDelegate, UITableViewDataSource {
             
             switch object {
             case .comics:
-                cell?.configCellWithComics(arrayComics, cnt: self)
+                cell?.configCellWithComics(viewModel.arrayComics, cnt: self)
             case .series:
-                cell?.configCellWithSeries(arraySeries, cnt: self)
+                cell?.configCellWithSeries(viewModel.arraySeries, cnt: self)
             default:
                 break
             }
@@ -252,10 +197,6 @@ extension CharacterDetailC: UITableViewDelegate, UITableViewDataSource {
             
             return cell!
         }
-	}
-	
-	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-		
 	}
 	
 }
