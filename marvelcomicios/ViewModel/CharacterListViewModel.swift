@@ -17,6 +17,7 @@ class CharacterListViewModel {
     // MARK: ============
     //-----------------------
     
+    private var urlSession = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
     private var controller: BaseControllerProtocol!
     var refreshData = { () -> () in }
     var arrayCharacters: [Character] = [] {
@@ -36,25 +37,18 @@ class CharacterListViewModel {
     //-----------------------
     
     func wsGetCharacterList() {
-        API.shared.ws_Get_Characters { result, error, strMsg, array in
+        MarvelNetwork.executeRequest(endpoint: MarvelComicsEndpoint.wsGetCharacters(params: CharacterListDTO(limit: 50)),
+                                     model: WSCharactersResponse.self, session: urlSession) { result in
             switch result {
-            case .success:
-                if error != nil {
-                    print("\(self) >>> processWSResponse\nWS - \(WS_CHARACTERS) = OK | Result = KO")
-                    self.controller.showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
+            case .success(let response):
+                self.arrayCharacters = response.data?.results ?? []
+                if self.arrayCharacters.isEmpty {
+                    self.controller.showView(type: .viewError, mssgError: "No se han encontrado valores")
                 } else {
-                    print("\(self) >>> processWSResponse\nWS - \(WS_CHARACTERS) = OK | Result = OK")
-                    if let arrayObj = array?.first as? [Character] {
-                        self.arrayCharacters = arrayObj
-                        self.controller.showView(type: .viewContent, mssgError: nil)
-                    } else {
-                        self.arrayCharacters = []
-                        self.controller.showView(type: .viewError, mssgError: "No se han encontrado valores")
-                    }
+                    self.controller.showView(type: .viewContent, mssgError: nil)
                 }
-            case .failure:
-                print("\(self) >>> processWSResponse\nWS - \(WS_CHARACTERS) = KO | Result = KO")
-                self.controller.showView(type: .viewError, mssgError: strMsg ?? "defaultErrorMsg".localized())
+            case .failure(let error):
+                self.controller.showView(type: .viewError, mssgError: error.description)
             }
         }
     }

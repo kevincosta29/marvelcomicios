@@ -8,17 +8,7 @@
 
 import UIKit
 
-struct WSBaseResponse: Codable {
-    
-    var result                  : String?
-    var strMsg                  : String?
-    
-    private enum CodingKeys: String, CodingKey {
-        case result
-        case strMsg
-    }
-}
-
+// MARK: - List of characters
 struct WSCharactersResponse: Codable {
     
     var code                : Int?
@@ -49,6 +39,8 @@ struct WSCharactersDataResponse: Codable {
     }
 }
 
+// MARK: - List of Comics from character
+
 struct WSComicsResponse: Codable {
     
     var code                : Int?
@@ -68,7 +60,7 @@ struct WSComicsDataResponse: Codable {
     var limit               : Int?
     var total               : Int?
     var count               : Int?
-    var results             : [Comic]
+    var results             : [Comic]?
     
     private enum CodingKeys: String, CodingKey {
         case offset
@@ -78,6 +70,8 @@ struct WSComicsDataResponse: Codable {
         case results
     }
 }
+
+// MARK: - List of Series from character
 
 struct WSSeriesResponse: Codable {
     
@@ -98,7 +92,7 @@ struct WSSeriesDataResponse: Codable {
     var limit               : Int?
     var total               : Int?
     var count               : Int?
-    var results             : [Serie]
+    var results             : [Serie]?
     
     private enum CodingKeys: String, CodingKey {
         case offset
@@ -107,4 +101,20 @@ struct WSSeriesDataResponse: Codable {
         case count
         case results
     }
+}
+
+// MARK: - Base error response
+
+struct WSErrorResponse: Codable {
+    var code                : String?
+    var message             : String?
+    var description         : String {
+        return "Code: \(code ?? "") - Message: \(message ?? "")"
+    }
+    
+    private enum CodingKeys: String, CodingKey {
+        case code
+        case message
+    }
+    
 }

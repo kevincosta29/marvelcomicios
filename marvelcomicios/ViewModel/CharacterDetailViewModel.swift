@@ -16,6 +16,7 @@ class CharacterDetailViewModel {
     // MARK: ============
     //-----------------------
     
+    private var urlSession = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
     private var controller: BaseControllerProtocol!
     var refreshData = { () -> () in }
     var arrayComics: [Comic] = [] {
@@ -39,14 +40,28 @@ class CharacterDetailViewModel {
     //-----------------------
     
     func wsGetComics(id: Int) {
-        API.shared.ws_Get_Characters_Comics(characterId: id) { result, error, strMsg, array in
-            self.processWSResponse(strAction: WS_CHARACTER_COMICS, result: result, error: error, strMsg: strMsg, array: array)
+        MarvelNetwork.executeRequest(endpoint: MarvelComicsEndpoint.wsGetCharacterComics(id: id),
+                                 model: WSComicsResponse.self, session: urlSession) { result in
+            switch result {
+            case .success(let response):
+                self.arrayComics = response.data?.results ?? []
+                self.createContent()
+            case .failure(let error):
+                self.controller.showView(type: .viewError, mssgError: error.description)
+            }
         }
     }
     
     func wsGetSeries(id: Int) {
-        API.shared.ws_Get_Characters_Series(characterId: id) { result, error, strMsg, array in
-            self.processWSResponse(strAction: WS_CHARACTER_SERIES, result: result, error: error, strMsg: strMsg, array: array)
+        MarvelNetwork.executeRequest(endpoint: MarvelComicsEndpoint.wsGetCharacterSeries(id: id),
+                                 model: WSSeriesResponse.self, session: urlSession) { result in
+            switch result {
+            case .success(let response):
+                self.arraySeries = response.data?.results ?? []
+                self.createContent()
+            case .failure(let error):
+                self.controller.showView(type: .viewError, mssgError: error.description)
+            }
         }
     }
     
@@ -63,34 +78,6 @@ class CharacterDetailViewModel {
         
         refreshData()
         controller.showView(type: .viewContent, mssgError: nil)
-    }
-    
-    private func processWSResponse(strAction: String, result: AFResult<Any>, error: NSError?, strMsg: String?, array: [Any]?) {
-        switch result {
-        case .success:
-            if error != nil {
-                print("\(self) >>> processWSResponse\nWS - \(strAction) = OK | Result = KO")
-                controller.showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
-            } else {
-                print("\(self) >>> processWSResponse\nWS - \(strAction) = OK | Result = OK")
-                switch strAction {
-                case WS_CHARACTER_COMICS:
-                    if let arrayObj = array?.first as? [Comic] {
-                        self.arrayComics = arrayObj
-                    }
-                case WS_CHARACTER_SERIES:
-                    if let arrayObj = array?.first as? [Serie] {
-                        self.arraySeries = arrayObj
-                    }
-                default:
-                    break
-                }
-                createContent()
-            }
-        case .failure:
-            print("\(self) >>> processWSResponse\nWS - \(strAction) = KO | Result = ?")
-            controller.showView(type: .viewError, mssgError: error?.domain ?? "defaultErrorMsg".localized())
-        }
     }
     
 }

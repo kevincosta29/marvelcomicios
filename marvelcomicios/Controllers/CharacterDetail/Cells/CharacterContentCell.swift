@@ -112,7 +112,7 @@ extension CharacterContentCell: UICollectionViewDelegate, UICollectionViewDataSo
         var cell = collectionView.dequeueReusableCell(withReuseIdentifier: indentifier, for: indexPath) as? CharacterCollectionCell
         
         if cell == nil {
-            collectionView.register(UINib.init(nibName: indentifier, bundle: nil), forCellWithReuseIdentifier: indentifier)
+            collectionView.register(UINib(nibName: indentifier, bundle: nil), forCellWithReuseIdentifier: indentifier)
             cell = collectionView.dequeueReusableCell(withReuseIdentifier: indentifier, for: indexPath) as? CharacterCollectionCell
         }
         
@@ -140,7 +140,11 @@ extension CharacterContentCell: UICollectionViewDelegate, UICollectionViewDataSo
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch section {
         case .comics:
-            break
+            let comic = arrayComics[indexPath.row]
+            let vc = ModalComicC(comic: comic)
+            vc.modalPresentationStyle = .custom
+            vc.transitioningDelegate = self
+            self.controller.present(vc, animated: true)
         default:
             break
         }
@@ -148,3 +152,8 @@ extension CharacterContentCell: UICollectionViewDelegate, UICollectionViewDataSo
     
 }
 
+extension CharacterContentCell: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        PresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}

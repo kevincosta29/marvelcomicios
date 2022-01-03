@@ -209,18 +209,6 @@ extension UIScreen {
 	public func getHeight() -> CGFloat {
 		return UIScreen.main.bounds.size.height
 	}
-	
-	public func getDev() -> String
-	{
-		let isiPad: Bool = (UIDevice.current.userInterfaceIdiom == .pad)
-		
-		if (isiPad) {
-			return "tablet"
-		}
-		else {
-			return "phone"
-		}
-	}
 }
 
 public extension UIImage {

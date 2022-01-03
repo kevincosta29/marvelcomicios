@@ -21,6 +21,7 @@ class ModalComicC: BaseC {
     @IBOutlet weak var imgContent: UIImageView!
     @IBOutlet weak var lblDesc: UILabel!
     @IBOutlet weak var lblIsbn: UILabel!
+    @IBOutlet weak var viewDismiss: UIView!
     
 	//-----------------------
 	// MARK: VARIABLES
@@ -65,7 +66,7 @@ class ModalComicC: BaseC {
         
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(panGestureRecognizerAction))
         viewContent.addGestureRecognizer(panGesture)
-//        viewDismiss.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissViewContent)))
+        viewDismiss.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissViewContent)))
         
         createContent()
 	}
@@ -97,6 +98,9 @@ class ModalComicC: BaseC {
         lblTitle.text = comic.title
         lblDesc.text = comic.description
         lblIsbn.text = comic.isbn
+        if let url = comic.thumbnail?.urlImg {
+            imgContent.af.setImage(withURL: url, imageTransition: .crossDissolve(FADE_IN))
+        }
     }
     
     @objc private func dismissViewContent() {
