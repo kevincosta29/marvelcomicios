@@ -7,7 +7,6 @@ target 'marvelcomicios' do
   use_frameworks!
 
   # Pods for marvelcomicios
-  pod 'Alamofire'
   pod 'AlamofireImage'
   pod 'IQKeyboardManagerSwift'
   pod 'lottie-ios'

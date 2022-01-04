@@ -1,5 +1,5 @@
 //
-//  URLSessionMock.swift
+//  MockURLSession.swift
 //  marvelcomiciosTests
 //
 //  Created by Kevin Costa on 3/1/22.

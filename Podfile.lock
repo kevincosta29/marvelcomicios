@@ -6,7 +6,6 @@ PODS:
   - lottie-ios (3.2.3)
 
 DEPENDENCIES:
-  - Alamofire
   - AlamofireImage
   - IQKeyboardManagerSwift
   - lottie-ios
@@ -24,6 +23,6 @@ SPEC CHECKSUMS:
   IQKeyboardManagerSwift: c7df9d2deb356c04522f5c4b7b6e4ce4d8ed94fe
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
 
-PODFILE CHECKSUM: 44e5d542808f4bd8ba39a9e507ba027bc1eed809
+PODFILE CHECKSUM: bfc03bd3568cba38305a672b60caf6e10204e267
 
 COCOAPODS: 1.10.2

@@ -341,6 +341,7 @@
 				4F8982E0215137D400703F44 /* Keys.swift */,
 				2F259DDF21F88EB700DC70D5 /* Localizable.strings */,
 				2F259DDC21F88EB200DC70D5 /* InfoPlist.strings */,
+				0ECA64E526DD6AB5000EBE8E /* loading.json */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -362,7 +363,6 @@
 				0ECA64E726DD78A5000EBE8E /* Launch Screen.storyboard */,
 				0ECA64BB26DD41ED000EBE8E /* marvelcomicios.xcdatamodeld */,
 				4F9111CD215116A80028AC18 /* Info.plist */,
-				0ECA64E526DD6AB5000EBE8E /* loading.json */,
 				0EC9E30E27838DA300AB28BC /* marvelcomiciosTests */,
 				4F9111BC215116A60028AC18 /* Products */,
 				A15846A5101B26DB71C139C4 /* Pods */,
