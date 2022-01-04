@@ -11,12 +11,12 @@ import XCTest
 
 class CharacterListViewModelTest: XCTestCase {
     
-    private var session: URLSessionMock!
+    private var session: MockURLSession!
     private var mockController: BaseControllerProtocol!
 
     override func setUpWithError() throws {
         mockController = MockViewController()
-        session = URLSessionMock()
+        session = MockURLSession()
     }
 
     override func tearDownWithError() throws {
@@ -45,21 +45,38 @@ class CharacterListViewModelTest: XCTestCase {
     
     func test_CharacterListEmpty_Success() throws {
         let expectation = XCTestExpectation(description: "test_CharacterListEmpty_Success")
-        let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterListViewModelTest.self).url(forResource: "characterListMockEmpty", withExtension: "json"))
+        let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterListViewModelTest.self).url(forResource: "characterListEmptyMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
         let mockObjectResponse = try KParser<WSCharactersResponse>.parserData(mockDataResponse)
-        
+
         session.dataMock = mockDataResponse
-        
+
         let viewModel = CharacterListViewModel(controller: mockController, urlSession: session)
-        
+
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arrayCharacters.count, mockObjectResponse.data?.results.count)
             expectation.fulfill()
         }
-        
+
         viewModel.wsGetCharacterList()
-        
+
+        let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
+        XCTAssertEqual(waiter, .completed)
+    }
+    
+    func test_CharacterListNilData_Success() throws {
+        let expectation = XCTestExpectation(description: "test_CharacterListNilData_Success")
+        session.dataMock = try JSONEncoder().encode(WSCharactersResponse())
+
+        let viewModel = CharacterListViewModel(controller: mockController, urlSession: session)
+
+        viewModel.refreshData = {
+            XCTAssertEqual(viewModel.arrayCharacters.count, 0)
+            expectation.fulfill()
+        }
+
+        viewModel.wsGetCharacterList()
+
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
     }

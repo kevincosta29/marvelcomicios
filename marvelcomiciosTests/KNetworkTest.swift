@@ -11,10 +11,10 @@ import XCTest
 
 class KNetworkTest: XCTestCase {
     
-    private var session: URLSessionMock!
+    private var session: MockURLSession!
 
     override func setUpWithError() throws {
-        session = URLSessionMock()
+        session = MockURLSession()
     }
 
     override func tearDownWithError() throws {

@@ -11,10 +11,10 @@ import XCTest
 
 class MarvelNetwork_Test: XCTestCase {
     
-    private var session: URLSessionMock!
+    private var session: MockURLSession!
 
     override func setUpWithError() throws {
-        session = URLSessionMock()
+        session = MockURLSession()
     }
 
     override func tearDownWithError() throws {
@@ -69,7 +69,30 @@ class MarvelNetwork_Test: XCTestCase {
     
     func test_RequestNotValidStatusCode() throws {
         let expectation = XCTestExpectation(description: "test_Request_Error")
-        let mockResponse = WSErrorResponse(code: "", message: "")
+        let mockResponse = WSErrorResponse(code: "", message: "test_Request_Error")
+        session.statusCode = 401
+        session.dataMock = try? JSONEncoder().encode(mockResponse)
+        
+        let errorExpected = KNetworkError.error(message: mockResponse.description)
+        
+        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+            switch result {
+            case .success(_):
+                XCTFail()
+            case .failure(let error):
+                XCTAssertEqual(error, errorExpected)
+                XCTAssertEqual(error.description, mockResponse.description)
+                expectation.fulfill()
+            }
+        }
+        
+        let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
+        XCTAssertEqual(waiter, .completed)
+    }
+    
+    func test_RequestNotValidStatus_InvalidParserData() throws {
+        let expectation = XCTestExpectation(description: "test_Request_Error")
+        let mockResponse = WSErrorResponse(code: "", message: "test_Request_Error")
         session.statusCode = 401
         session.dataMock = try? JSONEncoder().encode(mockResponse)
         
@@ -89,12 +112,10 @@ class MarvelNetwork_Test: XCTestCase {
         XCTAssertEqual(waiter, .completed)
     }
     
-    func test_RequestNotValidStatus_InvalidParserData() throws {
+    func test_RequestNotValidParserError() throws {
         let expectation = XCTestExpectation(description: "test_Request_Error")
-        let mockResponse = WSCharactersResponse(code: 200, status: "",
-                                                data: WSCharactersDataResponse(offset: 50, limit: 50, total: 50, count: 50, results: []))
         session.statusCode = 401
-        session.dataMock = try? JSONEncoder().encode(mockResponse)
+        session.dataMock = Data()
         
         let errorExpected = KNetworkError.error(message: "ERROR RESPONSE - STATUS CODE: \(session.statusCode)")
         
@@ -114,7 +135,7 @@ class MarvelNetwork_Test: XCTestCase {
     
     func test_InvalidDataParser_Success() throws {
         let expectation = XCTestExpectation(description: "test_Request_Error")
-        let mockResponse = WSErrorResponse(code: "", message: "")
+        let mockResponse = WSErrorResponse(code: "", message: "test_Request_Error")
         
         session.dataMock = try? JSONEncoder().encode(mockResponse)
         

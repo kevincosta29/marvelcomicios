@@ -16,23 +16,21 @@ class CharacterDetailViewModel {
     // MARK: ============
     //-----------------------
     
-    private var urlSession = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
-    private var controller: BaseControllerProtocol!
+    private var urlSession: URLSession
+    private var controller: BaseControllerProtocol
     var refreshData = { () -> () in }
-    var arrayComics: [Comic] = [] {
-        didSet { refreshData() }
-    }
-    var arraySeries: [Serie] = [] {
-        didSet { refreshData() }
-    }
+    var arrayComics: [Comic] = []
+    var arraySeries: [Serie] = []
     var arraySections: [CharacterDetailSection] = []
     
     //-----------------------
     // MARK: - LIVE APP
     //-----------------------
     
-    init(controller: BaseControllerProtocol) {
+    init(controller: BaseControllerProtocol,
+         session: URLSession = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)) {
         self.controller = controller
+        self.urlSession = session
     }
     
     //-----------------------
@@ -46,8 +44,9 @@ class CharacterDetailViewModel {
             case .success(let response):
                 self.arrayComics = response.data?.results ?? []
                 self.createContent()
-            case .failure(let error):
-                self.controller.showView(type: .viewError, mssgError: error.description)
+            case .failure(_):
+                self.arrayComics = []
+                self.createContent()
             }
         }
     }
@@ -59,8 +58,9 @@ class CharacterDetailViewModel {
             case .success(let response):
                 self.arraySeries = response.data?.results ?? []
                 self.createContent()
-            case .failure(let error):
-                self.controller.showView(type: .viewError, mssgError: error.description)
+            case .failure(_):
+                self.arraySeries = []
+                self.createContent()
             }
         }
     }
