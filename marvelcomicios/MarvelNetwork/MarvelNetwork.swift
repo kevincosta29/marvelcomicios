@@ -27,17 +27,13 @@ final class MarvelNetwork {
                                                             completion: @escaping(Result<T, KNetworkError>) -> Void) {
         switch response.statusCode {
         case 200...299:
-            if let data = response.data as? T {
-                completion(.success(data))
-            } else {
-                guard let dataParsed = try? KParser<T>.parserData(response.data) else {
-                    completion(.failure(KNetworkError.parserError(message: "Can not parser object")))
-                    print("MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - ERROR PARSER OBJECT - OK")
-                    return
-                }
-                print("MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - OK")
-                completion(.success(dataParsed))
+            guard let dataParsed = try? KParser<T>.parserData(response.data) else {
+                completion(.failure(KNetworkError.parserError(message: "Can not parser object")))
+                print("MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - ERROR PARSER OBJECT - OK")
+                return
             }
+            print("MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - OK")
+            completion(.success(dataParsed))
         default:
             print("MarvelNetwork: \(action) - STATUS CODE: - \(response.statusCode) - KO")
             guard let errorResponse = try? KParser<WSErrorResponse>.parserData(response.data) else {

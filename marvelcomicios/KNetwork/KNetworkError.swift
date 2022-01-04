@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum KNetworkError: Error {
+enum KNetworkError: Error, Equatable {
     
     case error(message: String)
     case parserError(message: String)
