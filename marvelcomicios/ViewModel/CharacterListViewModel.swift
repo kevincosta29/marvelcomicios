@@ -17,8 +17,8 @@ class CharacterListViewModel {
     // MARK: ============
     //-----------------------
     
-    private var urlSession = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)
-    private var controller: BaseControllerProtocol!
+    let urlSession: URLSession
+    private let controller: BaseControllerProtocol
     var refreshData = { () -> () in }
     var arrayCharacters: [Character] = [] {
         didSet { refreshData() }
@@ -28,8 +28,10 @@ class CharacterListViewModel {
     // MARK: - LIVE APP
     //-----------------------
     
-    init(controller: BaseControllerProtocol) {
+    init(controller: BaseControllerProtocol,
+         urlSession: URLSession = URLSession(configuration: .default, delegate: nil, delegateQueue: nil)) {
         self.controller = controller
+        self.urlSession = urlSession
     }
     
     //-----------------------
@@ -48,6 +50,7 @@ class CharacterListViewModel {
                     self.controller.showView(type: .viewContent, mssgError: nil)
                 }
             case .failure(let error):
+                self.arrayCharacters = []
                 self.controller.showView(type: .viewError, mssgError: error.description)
             }
         }
