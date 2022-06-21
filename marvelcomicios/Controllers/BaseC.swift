@@ -103,6 +103,18 @@ class BaseC: UIViewController, UIGestureRecognizerDelegate, BaseControllerProtoc
         NotificationCenter.default.removeObserver(self)
     }
     
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        switch previousTraitCollection?.userInterfaceStyle {
+        case .light:
+            UIApplication.shared.setStatusBar(style: .lightContent)
+        case .dark:
+            UIApplication.shared.setStatusBar(style: .default)
+        default:
+            UIApplication.shared.setStatusBar(style: .default)
+        }
+        self.viewDidLoad()
+    }
+    
     //-----------------------
     // MARK: - METHODS
     //-----------------------

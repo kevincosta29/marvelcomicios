@@ -18,7 +18,9 @@ class KNetwork {
             return
         }
                 
+        print("⬆️ - KNetwrok Request: \(request.url?.absoluteString ?? "")")
         session.dataTask(with: request) { data, response, error in
+            print("⬇️ - KNetwrok Request: \(request.url?.absoluteString ?? "")")
             manageResponse(data: data, response: response, error: error) { result in
                 DispatchQueue.main.async {
                     switch result {
@@ -32,7 +34,8 @@ class KNetwork {
         }.resume()
     }
     
-    private static func manageResponse(data: Data?, response: URLResponse?, error: Error?, completion: @escaping(Result<(data: Data, statusCode: Int), KNetworkError>) -> Void) {
+    private static func manageResponse(data: Data?, response: URLResponse?, error: Error?,
+                                       completion: @escaping(Result<(data: Data, statusCode: Int), KNetworkError>) -> Void) {
         if let err = error {
             let knetworkError = KNetworkError.error(message: err.localizedDescription)
             completion(.failure(knetworkError))

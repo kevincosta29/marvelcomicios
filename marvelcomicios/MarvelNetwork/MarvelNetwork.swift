@@ -17,7 +17,7 @@ final class MarvelNetwork {
             case .success(let response):
                 self.manageResponseSuccess(action: endpoint.path, response: response, completion: completion)
             case .failure(let err):
-                print("MCNetwork: \(err.description) - ERROR - KO")
+                print("❌ - MarvelNetwork: \(err.description) - ERROR - KO")
                 completion(.failure(err))
             }
         }
@@ -29,13 +29,13 @@ final class MarvelNetwork {
         case 200...299:
             guard let dataParsed = try? KParser<T>.parserData(response.data) else {
                 completion(.failure(KNetworkError.parserError(message: "Can not parser object")))
-                print("MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - ERROR PARSER OBJECT - OK")
+                print("MarvelNetwork❓: \(action) - STATUS CODE: \(response.statusCode) - ERROR PARSER OBJECT - OK")
                 return
             }
-            print("MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - OK")
+            print("✅ - MarvelNetwork: \(action) - STATUS CODE: \(response.statusCode) - OK")
             completion(.success(dataParsed))
         default:
-            print("MarvelNetwork: \(action) - STATUS CODE: - \(response.statusCode) - KO")
+            print("❌ - MarvelNetwork: \(action) - STATUS CODE: - \(response.statusCode) - KO")
             guard let errorResponse = try? KParser<WSErrorResponse>.parserData(response.data) else {
                 completion(.failure(KNetworkError.error(message: "ERROR RESPONSE - STATUS CODE: \(response.statusCode)")))
                 return
