@@ -21,14 +21,17 @@ class CharacterListC: BaseC {
     @IBOutlet weak var viewError: UIView!
 	@IBOutlet weak var viewLoading: UIView!
 	@IBOutlet weak var viewContent: UIView!
-	@IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableView: UITableView! {
+        didSet { tableView.register(CharacterCell.nib, forCellReuseIdentifier: CharacterCell.id) }
+    }
     @IBOutlet weak var btnRetry: UIButton!
     
 	//-----------------------
 	// MARK: VARIABLES
 	//-----------------------
 	
-    private var viewModel: CharacterListViewModel!
+    var viewModel: CharacterListViewModelProtocol!
+    var flowManager: CharacterListFlowManagerProtocol!
 	
 	//-----------------------
 	// MARK: CONSTANTS
@@ -42,7 +45,6 @@ class CharacterListC: BaseC {
 	
 	init() {
 		super.init(nibName: "CharacterListC", bundle: Bundle.main)
-        self.viewModel = CharacterListViewModel(controller: self)
 	}
 	
 	required public init?(coder aDecoder: NSCoder) {
@@ -62,7 +64,6 @@ class CharacterListC: BaseC {
 		//-----------------------------------------------------------------------------//
 		
 		// Do any additional setup after loading the view.
-        bind(to: viewModel)
         
         tableView.addCustomRefresh(action: #selector(pullToRefreshData), target: self)
 	}
@@ -70,34 +71,37 @@ class CharacterListC: BaseC {
 	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
-        viewModel.wsGetCharacterList()
+        viewModel.retrieveCharacterList(showLoading: false)
 	}
-    
-    private func bind(to viewModel: CharacterListViewModel) {
-        viewModel.refreshData = { [weak self] in
-            self?.tableView.refreshControl?.endRefreshing()
-            self?.tableView.reloadData()
-        }
-    }
 	
 	//-----------------------
 	// MARK: - ACTIONS
 	//-----------------------
 	
     @IBAction func actionBtnRetry(_ sender: Any) {
-        showView(type: .viewLoading)
-        viewModel.wsGetCharacterList()
+        viewModel.retrieveCharacterList(showLoading: true)
     }
 	
 	//-----------------------
 	// MARK: - METHODS
 	//-----------------------
     
-    @objc private func pullToRefreshData() {
-        viewModel.wsGetCharacterList()
+    override func bind() {
+        viewModel.refreshData = { [weak self] in
+            self?.tableView.refreshControl?.endRefreshing()
+            self?.tableView.reloadData()
+        }
+        
+        viewModel.showView = { [weak self] typeView, strMsg in
+            self?.showView(type: typeView, mssgError: strMsg)
+        }
     }
     
-    override func showView(type: ViewType, mssgError: String? = "") {
+    @objc private func pullToRefreshData() {
+        viewModel.retrieveCharacterList(showLoading: false)
+    }
+    
+    func showView(type: ViewType, mssgError: String? = "") {
         switch type {
         case .viewContent:
             UIView.animate(withDuration: FADE_IN, animations: {
@@ -133,32 +137,27 @@ class CharacterListC: BaseC {
 extension CharacterListC: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.arrayCharacters.count
+        return viewModel.arrayCharacter.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let object = viewModel.arrayCharacters[indexPath.row]
-		let identifier = "CharacterCell"
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: CharacterCell.id) as? CharacterCell else {
+            return UITableViewCell()
+        }
+        
+        let object = viewModel.arrayCharacter[indexPath.row]
+		cell.configCellWithCharacter(object, cnt: self)
 		
-		var cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterCell
+		cell.setNeedsUpdateConstraints()
+		cell.updateConstraintsIfNeeded()
 		
-		if cell == nil {
-			tableView.register(UINib.init(nibName: identifier, bundle: Bundle(for: CharacterCell.self)), forCellReuseIdentifier: identifier)
-			cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterCell
-		}
-		
-		cell?.configCellWithCharacter(object, cnt: self)
-		
-		cell?.setNeedsUpdateConstraints()
-		cell?.updateConstraintsIfNeeded()
-		
-		return cell!
+		return cell
 	}
 	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let object = viewModel.arrayCharacters[indexPath.row]
+        let object = viewModel.arrayCharacter[indexPath.row]
         tableView.deselectRow(at: indexPath, animated: true)
-        self.navigationController?.pushViewController(CharacterDetailC(character: object), animated: true)
+        flowManager.goToDetail(character: object)
 	}
 	
 }

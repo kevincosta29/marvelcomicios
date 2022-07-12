@@ -31,7 +31,8 @@ class CharacterCollectionCell: UICollectionViewCell {
     // MARK: ============
     //-----------------------
     
-    
+    static let id = "CharacterCollectionCell"
+    static let nib = UINib(nibName: id, bundle: Bundle(for: CharacterCollectionCell.self))
     
     //-----------------------
     // MARK: - LIVE APP

@@ -1,5 +1,5 @@
 //
-//  CharacterImgCell.swift
+//  CharacterCell.swift
 //  Marvel Comic
 //
 //  Created by Kevin Costa on 30/8/21.
@@ -8,8 +8,9 @@
 
 import Foundation
 import UIKit
+import AlamofireImage
 
-class CharacterImgCell: UITableViewCell {
+class CharacterCell: UITableViewCell {
 	
 	//-----------------------
 	// MARK: Outlets
@@ -28,6 +29,9 @@ class CharacterImgCell: UITableViewCell {
 	private var controller: UIViewController!
     private var character: Character!
     
+    static let id = "CharacterCell"
+    static let nib = UINib(nibName: id, bundle: Bundle(for: CharacterCell.self))
+	
 	//-----------------------
 	// MARK: Constants
 	// MARK: ============
@@ -41,6 +45,7 @@ class CharacterImgCell: UITableViewCell {
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
+        imgCharacter.layer.cornerRadius = 10.0
 	}
 	
 	override func setHighlighted(_ highlighted: Bool, animated: Bool) {
@@ -61,7 +66,7 @@ class CharacterImgCell: UITableViewCell {
 	// MARK: - METHODS
 	//-----------------------
 	
-    func configCellWithCharacter(_ character: Character, cnt: UIViewController) {
+	func configCellWithCharacter(_ character: Character, cnt: UIViewController) {
 		self.controller = cnt
         self.character = character
         
@@ -73,8 +78,9 @@ class CharacterImgCell: UITableViewCell {
         if let url = character.thumbnail?.urlImg {
             imgCharacter.af.setImage(withURL: url, imageTransition: .crossDissolve(FADE_IN))
             imgCharacter.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showImg(_:))))
+        } else {
+            imgCharacter.image = UIImage()
         }
-        
 	}
     
     @objc private func showImg(_ sender: UITapGestureRecognizer) {
@@ -83,6 +89,5 @@ class CharacterImgCell: UITableViewCell {
             vc.showControllerEraseOut(vc: imgVC)
         }
     }
-
 	
 }

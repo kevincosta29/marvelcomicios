@@ -28,7 +28,7 @@ class ModalListC: BaseC {
     private var pointOrigin: CGPoint?
     private var hasSetPointOrigin = false
     private var arrayLinks: [Link] = []
-    private var controller: UIViewController!
+    private let flowManager: CharacterDetailFlowManagerProtocol
     
 	//-----------------------
 	// MARK: CONSTANTS
@@ -41,10 +41,10 @@ class ModalListC: BaseC {
 	// MARK: - LIVE APP
 	//-----------------------
 	
-    init(arrayLinks: [Link], cnt: UIViewController) {
-		super.init(nibName: "ModalListC", bundle: Bundle.main)
+    init(arrayLinks: [Link], flowManager: CharacterDetailFlowManagerProtocol) {
         self.arrayLinks = arrayLinks
-        self.controller = cnt
+        self.flowManager = flowManager
+        super.init(nibName: "ModalListC", bundle: Bundle.main)
 	}
 	
 	required public init?(coder aDecoder: NSCoder) {
@@ -145,8 +145,7 @@ extension ModalListC: UITableViewDelegate, UITableViewDataSource {
         let object = arrayLinks[indexPath.row]
         if let url = URL(string: object.url ?? "") {
             dismiss(animated: true)
-            let vc = WebViewC(url: url, strTitle: object.type?.capitalizingFirstLetter() ?? "")
-            self.controller.navigationController?.pushViewController(vc, animated: true)
+            flowManager.goToWebView(url: url, title: object.type?.capitalizingFirstLetter() ?? "")
         }
 	}
 	

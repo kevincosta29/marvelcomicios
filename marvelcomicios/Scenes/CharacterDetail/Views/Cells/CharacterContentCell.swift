@@ -17,7 +17,11 @@ class CharacterContentCell: UITableViewCell {
 	//-----------------------
 	
     @IBOutlet weak var lblTitle: UILabel!
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var collectionView: UICollectionView! {
+        didSet {
+            collectionView.register(CharacterCollectionCell.nib, forCellWithReuseIdentifier: CharacterCollectionCell.id)
+        }
+    }
 	
 	//-----------------------
 	// MARK: Variables
@@ -34,7 +38,8 @@ class CharacterContentCell: UITableViewCell {
 	// MARK: ============
 	//-----------------------
 	
-	
+	static let id = "CharacterContentCell"
+    static let nib = UINib(nibName: id, bundle: Bundle(for: CharacterContentCell.self))
 	
 	//-----------------------
 	// MARK: - LIVE APP
@@ -43,7 +48,7 @@ class CharacterContentCell: UITableViewCell {
 	override func awakeFromNib() {
 		super.awakeFromNib()
         
-        collectionView.register(UINib(nibName: "CharacterCollectionCell", bundle: nil), forCellWithReuseIdentifier: "CharacterCollectionCell")
+        collectionView.register(CharacterCollectionCell.nib, forCellWithReuseIdentifier: CharacterCollectionCell.id)
         let layoutPendingForms: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
         layoutPendingForms.scrollDirection = .horizontal
         layoutPendingForms.minimumInteritemSpacing = 0
@@ -108,29 +113,25 @@ extension CharacterContentCell: UICollectionViewDelegate, UICollectionViewDataSo
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let indentifier = "CharacterCollectionCell"
-        var cell = collectionView.dequeueReusableCell(withReuseIdentifier: indentifier, for: indexPath) as? CharacterCollectionCell
-        
-        if cell == nil {
-            collectionView.register(UINib(nibName: indentifier, bundle: nil), forCellWithReuseIdentifier: indentifier)
-            cell = collectionView.dequeueReusableCell(withReuseIdentifier: indentifier, for: indexPath) as? CharacterCollectionCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CharacterCollectionCell.id, for: indexPath) as? CharacterCollectionCell else {
+            return UICollectionViewCell()
         }
         
         switch section {
         case .comics:
             let object = arrayComics[indexPath.row]
-            cell?.configCellWithComic(object, cnt: controller)
+            cell.configCellWithComic(object, cnt: controller)
         case .series:
             let object = arraySeries[indexPath.row]
-            cell?.configCellWithSerie(object, cnt: controller)
+            cell.configCellWithSerie(object, cnt: controller)
         default:
             break
         }
 
-        cell?.needsUpdateConstraints()
-        cell?.updateConstraintsIfNeeded()
+        cell.needsUpdateConstraints()
+        cell.updateConstraintsIfNeeded()
         
-        return cell!
+        return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {

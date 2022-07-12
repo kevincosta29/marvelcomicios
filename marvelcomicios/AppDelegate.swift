@@ -19,7 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
     var restrictRotation: RotationType = .portrait
-
+    let navC = UINavigationController()
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -31,9 +31,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
 
-        let navC = UINavigationController(rootViewController: CharacterListC())
-        window?.rootViewController = navC
+        let flowManager = CharacterListFlowManager(navController: navC)
+        
+        window?.rootViewController = flowManager.getSceneViewController()
         window?.makeKeyAndVisible()
+        
+        flowManager.start()
         
         return true
     }

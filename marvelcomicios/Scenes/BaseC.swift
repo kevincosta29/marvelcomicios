@@ -18,7 +18,7 @@ enum CharacterDetailSection {
 }
 
 protocol BaseControllerProtocol {
-    func showView(type: ViewType, mssgError: String?)
+    func bind()
 }
 
 class BaseC: UIViewController, UIGestureRecognizerDelegate, BaseControllerProtocol {
@@ -46,6 +46,8 @@ class BaseC: UIViewController, UIGestureRecognizerDelegate, BaseControllerProtoc
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bind()
         
         // Do any additional setup after loading the view.
         
@@ -119,7 +121,7 @@ class BaseC: UIViewController, UIGestureRecognizerDelegate, BaseControllerProtoc
     // MARK: - METHODS
     //-----------------------
     
-    func showView(type: ViewType, mssgError: String?) {
+    func bind() {
         // Do nothing here
     }
     

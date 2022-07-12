@@ -21,7 +21,12 @@ class CharacterDetailC: BaseC {
     @IBOutlet weak var viewError: UIView!
 	@IBOutlet weak var viewLoading: UIView!
 	@IBOutlet weak var viewContent: UIView!
-	@IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableView: UITableView! {
+        didSet {
+            tableView.register(CharacterImgCell.nib, forCellReuseIdentifier: CharacterImgCell.id)
+            tableView.register(CharacterContentCell.nib, forCellReuseIdentifier: CharacterContentCell.id)
+        }
+    }
     @IBOutlet weak var btnRetry: UIButton!
     
 	//-----------------------
@@ -29,8 +34,9 @@ class CharacterDetailC: BaseC {
 	// MARK: ============
 	//-----------------------
 	
-	private var character: Character!
-    private var viewModel: CharacterDetailViewModel!
+	private let character: Character
+    var viewModel: CharacterDetailViewModelProtocol!
+    var flowManager: CharacterDetailFlowManagerProtocol!
 	
 	//-----------------------
 	// MARK: CONSTANTS
@@ -44,9 +50,8 @@ class CharacterDetailC: BaseC {
 	//-----------------------
 	
     init(character: Character) {
-		super.init(nibName: "CharacterDetailC", bundle: Bundle.main)
         self.character = character
-        self.viewModel = CharacterDetailViewModel(controller: self)
+		super.init(nibName: "CharacterDetailC", bundle: Bundle.main)
 	}
 	
 	required public init?(coder aDecoder: NSCoder) {
@@ -68,7 +73,6 @@ class CharacterDetailC: BaseC {
 		//-----------------------------------------------------------------------------//
 		
 		// Do any additional setup after loading the view.
-        bind(to: viewModel)
         tableView.addCustomRefresh(action: #selector(retrieveData), target: self)
         retrieveData()
         
@@ -83,13 +87,6 @@ class CharacterDetailC: BaseC {
 		super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = false
 	}
-    
-    private func bind(to viewModel: CharacterDetailViewModel) {
-        viewModel.refreshData = { [weak self] in
-            self?.tableView.refreshControl?.endRefreshing()
-            self?.tableView.reloadData()
-        }
-    }
 	
 	//-----------------------
 	// MARK: - ACTIONS
@@ -104,19 +101,26 @@ class CharacterDetailC: BaseC {
 	// MARK: - METHODS
 	//-----------------------
     
+    override func bind() {
+        viewModel.refreshData = { [weak self] in
+            self?.tableView.refreshControl?.endRefreshing()
+            self?.tableView.reloadData()
+        }
+        
+        viewModel.showView = { [weak self] type, strMsg in
+            self?.showView(type: type, mssgError: strMsg)
+        }
+    }
+    
     @objc private func openModal() {
-        let vc = ModalListC(arrayLinks: character.urls ?? [], cnt: self)
-        vc.modalPresentationStyle = .custom
-        vc.transitioningDelegate = self
-        self.present(vc, animated: true)
+        flowManager.openModal(arrayLinks: character.urls ?? [])
     }
     
     @objc private func retrieveData() {
-        viewModel.wsGetComics(id: character.id ?? -1)
-        viewModel.wsGetSeries(id: character.id ?? -1)
+        viewModel.retrieveContent(id: character.id ?? -1)
     }
 	
-    override func showView(type: ViewType, mssgError: String? = "") {
+    func showView(type: ViewType, mssgError: String? = "") {
         switch type {
         case .viewContent:
             UIView.animate(withDuration: FADE_IN, animations: {
@@ -159,50 +163,34 @@ extension CharacterDetailC: UITableViewDelegate, UITableViewDataSource {
         let object = viewModel.arraySections[indexPath.row]
         switch object {
         case .header:
-            let identifier = "CharacterImgCell"
-            
-            var cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterImgCell
-            
-            if cell == nil {
-                tableView.register(UINib.init(nibName: identifier, bundle: Bundle(for: CharacterImgCell.self)), forCellReuseIdentifier: identifier)
-                cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterImgCell
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CharacterImgCell.id) as? CharacterImgCell else {
+                return UITableViewCell()
             }
             
-            cell?.configCellWithCharacter(character, cnt: self)
+            cell.configCellWithCharacter(character, cnt: self)
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
             
-            cell?.setNeedsUpdateConstraints()
-            cell?.updateConstraintsIfNeeded()
-            
-            return cell!
+            return cell
         case .comics, .series:
-            let identifier = "CharacterContentCell"
-            var cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterContentCell
-            
-            if cell == nil {
-                tableView.register(UINib.init(nibName: identifier, bundle: Bundle(for: CharacterContentCell.self)), forCellReuseIdentifier: identifier)
-                cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? CharacterContentCell
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: CharacterContentCell.id) as? CharacterContentCell else {
+                return UITableViewCell()
             }
             
             switch object {
             case .comics:
-                cell?.configCellWithComics(viewModel.arrayComics, cnt: self)
+                cell.configCellWithComics(viewModel.arrayComics, cnt: self)
             case .series:
-                cell?.configCellWithSeries(viewModel.arraySeries, cnt: self)
+                cell.configCellWithSeries(viewModel.arraySeries, cnt: self)
             default:
                 break
             }
             
-            cell?.setNeedsUpdateConstraints()
-            cell?.updateConstraintsIfNeeded()
+            cell.setNeedsUpdateConstraints()
+            cell.updateConstraintsIfNeeded()
             
-            return cell!
+            return cell
         }
 	}
 	
-}
-
-extension CharacterDetailC: UIViewControllerTransitioningDelegate {
-    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
-        PresentationController(presentedViewController: presented, presenting: presenting)
-    }
 }
