@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 
 enum ViewType {
     case unknown, viewContent, viewLoading, viewError
@@ -82,6 +81,14 @@ class BaseC: UIViewController, UIGestureRecognizerDelegate, BaseControllerProtoc
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if self.traitCollection.userInterfaceStyle == .dark {
+             // User Interface is Dark
+            UIApplication.shared.setStatusBar(style: .lightContent)
+         } else {
+             // User Interface is Light
+             UIApplication.shared.setStatusBar(style: .default)
+         }
         
         navigationController?.navigationBar.isHidden = false
     }

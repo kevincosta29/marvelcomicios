@@ -7,7 +7,8 @@
 //
 
 import Foundation
+import KNetwork
 
 protocol CharacterListDataSourceProtocol {
-    func getCharacterList(completion: @escaping (Result<[Character], KNetworkError>) -> Void)
+    func getCharacterList() async -> (Result<[Character], KNetworkError>)
 }

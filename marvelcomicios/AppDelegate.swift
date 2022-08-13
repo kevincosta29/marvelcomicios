@@ -8,7 +8,6 @@
 
 import UIKit
 import CoreData
-import IQKeyboardManagerSwift
 
 enum RotationType {
     case unknown, portrait, landscapeLeft, landscapeRight, portraitUpsideDown, landscape, all, allButUpsideDown
@@ -25,9 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         Swift.debugPrint()
-        
-        IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.toolbarTintColor = PRIMARY_COLOR
         
         window = UIWindow(frame: UIScreen.main.bounds)
 

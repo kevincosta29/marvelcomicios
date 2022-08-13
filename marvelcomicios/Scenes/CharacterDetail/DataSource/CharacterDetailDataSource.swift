@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KNetwork
 
 class CharacterDetailDataSource: CharacterDetailDataSourceProtocol {
     
@@ -29,27 +30,27 @@ class CharacterDetailDataSource: CharacterDetailDataSourceProtocol {
     // MARK: - METHODS
     //-----------------------
     
-    func getComics(id: Int, completion: @escaping (Result<[Comic], KNetworkError>) -> Void) {
-        MarvelNetwork.executeRequest(endpoint: MarvelComicsEndpoint.wsGetCharacterComics(id: id),
-                                 model: WSComicsResponse.self, session: session) { result in
-            switch result {
-            case .success(let response):
-                completion(.success(response.data?.results ?? []))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+    func getComics(id: Int) async -> (Result<[Comic], KNetworkError>) {
+        let endPoint = MarvelComicsEndpoint.wsGetCharacterComics(id: id)
+        let response = await Service.executeRequest(endpoint: endPoint, model: WSComicsResponse.self, session: session)
+        
+        switch response {
+        case .success(let response):
+            return .success(response.data?.results ?? [])
+        case .failure(let error):
+            return .failure(error)
         }
     }
     
-    func getSeries(id: Int, completion: @escaping (Result<[Serie], KNetworkError>) -> Void) {
-        MarvelNetwork.executeRequest(endpoint: MarvelComicsEndpoint.wsGetCharacterSeries(id: id),
-                                 model: WSSeriesResponse.self, session: session) { result in
-            switch result {
-            case .success(let response):
-                completion(.success(response.data?.results ?? []))
-            case .failure(let error):
-                completion(.failure(error))
-            }
+    func getSeries(id: Int) async -> (Result<[Serie], KNetworkError>) {
+        let endPoint = MarvelComicsEndpoint.wsGetCharacterSeries(id: id)
+        let response = await Service.executeRequest(endpoint: endPoint, model: WSSeriesResponse.self, session: session)
+        
+        switch response {
+        case .success(let response):
+            return .success(response.data?.results ?? [])
+        case .failure(let error):
+            return .failure(error)
         }
     }
     

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Alamofire
 
 class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
     
@@ -38,21 +37,22 @@ class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
     func retrieveContent(id: Int) {
         createContent()
         
-        dataSource.getComics(id: id) { [weak self] result in
-            switch result {
+        Task {
+            let responseComics = await dataSource.getComics(id: id)
+            
+            switch responseComics {
             case .success(let array):
-                self?.arrayComics = array
-                self?.createContent()
+                arrayComics = array
+                createContent()
             case .failure(let error):
                 print(error.description)
             }
-        }
-        
-        dataSource.getSeries(id: id) { [weak self] result in
-            switch result {
+            
+            let responseSeries = await dataSource.getSeries(id: id)
+            switch responseSeries {
             case .success(let array):
-                self?.arraySeries = array
-                self?.createContent()
+                arraySeries = array
+                createContent()
             case .failure(let error):
                 print(error.description)
             }
@@ -70,7 +70,9 @@ class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
             arraySections.append(.series)
         }
         
-        refreshData()
+        DispatchQueue.main.async {
+            self.refreshData()
+        }
     }
     
 }

@@ -27,7 +27,7 @@ class MarvelNetwork_Test: XCTestCase {
         session.statusCode = 201
         session.dataMock = try? JSONEncoder().encode(mockResponse)
         
-        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+        Service.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
             switch result {
             case .success(let response):
                 XCTAssertEqual(response.code, mockResponse.code)
@@ -53,7 +53,7 @@ class MarvelNetwork_Test: XCTestCase {
         
         session.error = errorExpected
         
-        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+        Service.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
             switch result {
             case .success(_):
                 XCTFail()
@@ -75,7 +75,7 @@ class MarvelNetwork_Test: XCTestCase {
         
         let errorExpected = KNetworkError.error(message: mockResponse.description)
         
-        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+        Service.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
             switch result {
             case .success(_):
                 XCTFail()
@@ -98,7 +98,7 @@ class MarvelNetwork_Test: XCTestCase {
         
         let errorExpected = KNetworkError.error(message: mockResponse.description)
         
-        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+        Service.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
             switch result {
             case .success(_):
                 XCTFail()
@@ -119,7 +119,7 @@ class MarvelNetwork_Test: XCTestCase {
         
         let errorExpected = KNetworkError.error(message: "ERROR RESPONSE - STATUS CODE: \(session.statusCode)")
         
-        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+        Service.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
             switch result {
             case .success(_):
                 XCTFail()
@@ -141,7 +141,7 @@ class MarvelNetwork_Test: XCTestCase {
         
         let errorExpected = KNetworkError.parserError(message: "Can not parser object")
         
-        MarvelNetwork.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
+        Service.executeRequest(endpoint: MockCharacterEndPoint.validRequest, model: WSCharactersResponse.self, session: session) { result in
             switch result {
             case .success(_):
                 XCTFail()
