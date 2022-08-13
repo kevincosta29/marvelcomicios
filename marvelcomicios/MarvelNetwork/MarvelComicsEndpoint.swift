@@ -8,6 +8,7 @@
 
 import Foundation
 import CryptoKit
+import KNetwork
 
 enum MarvelComicsEndpoint: KEndpointProtocol {
     

@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-import Alamofire
+import AlamofireImage
 
 class ImageViewerC: BaseC {
 	

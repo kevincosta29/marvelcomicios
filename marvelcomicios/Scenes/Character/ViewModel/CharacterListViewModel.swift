@@ -36,14 +36,21 @@ class CharacterListViewModel: CharacterListViewModelProtocol {
         if showLoading {
             self.showView?(.viewLoading, nil)
         }
-        dataSource.getCharacterList { [weak self] result in
-            switch result {
+        
+        Task {
+            let response = await dataSource.getCharacterList()
+            
+            switch response {
             case .success(let array):
-                self?.arrayCharacter = array
-                self?.refreshData?()
-                self?.showView?(.viewContent, nil)
+                arrayCharacter = array
+                DispatchQueue.main.async {
+                    self.refreshData?()
+                    self.showView?(.viewContent, nil)
+                }
             case .failure(let error):
-                self?.showView?(.viewError, error.description)
+                DispatchQueue.main.async {
+                    self.showView?(.viewError, error.description)
+                }
             }
         }
     }

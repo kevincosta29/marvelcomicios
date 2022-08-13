@@ -7,8 +7,9 @@
 //
 
 import Foundation
+import KNetwork
 
 protocol CharacterDetailDataSourceProtocol {
-    func getComics(id: Int, completion: @escaping (Result<[Comic], KNetworkError>) -> Void)
-    func getSeries(id: Int, completion: @escaping (Result<[Serie], KNetworkError>) -> Void)
+    func getComics(id: Int) async -> (Result<[Comic], KNetworkError>)
+    func getSeries(id: Int) async -> (Result<[Serie], KNetworkError>)
 }

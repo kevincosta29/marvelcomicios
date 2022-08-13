@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KNetwork
 
 class CharacterListDataSource: CharacterListDataSourceProtocol {
     
@@ -29,19 +30,19 @@ class CharacterListDataSource: CharacterListDataSourceProtocol {
     // MARK: - METHODS
     //-----------------------
     
-    func getCharacterList(completion: @escaping (Result<[Character], KNetworkError>) -> Void) {
-        MarvelNetwork.executeRequest(endpoint: MarvelComicsEndpoint.wsGetCharacters(params: CharacterListDTO(limit: 50)),
-                                     model: WSCharactersResponse.self, session: session) { result in
-            switch result {
-            case .success(let response):
-                if let arrayCharacters = response.data?.results, !arrayCharacters.isEmpty {
-                    completion(.success(arrayCharacters))
-                } else {
-                    completion(.failure(KNetworkError.error(message: "No se han encontrado valores")))
-                }
-            case .failure(let error):
-                completion(.failure(error))
+    func getCharacterList() async -> (Result<[Character], KNetworkError>) {
+        let endPoint = MarvelComicsEndpoint.wsGetCharacters(params: CharacterListDTO(limit: 50))
+        let response = await Service.executeRequest(endpoint: endPoint, model: WSCharactersResponse.self, session: session)
+        
+        switch response {
+        case .success(let response):
+            if let arrayCharacters = response.data?.results, !arrayCharacters.isEmpty {
+                return .success(arrayCharacters)
+            } else {
+                return .failure(KNetworkError.error(message: "No se han encontrado valores"))
             }
+        case .failure(let error):
+            return .failure(error)
         }
     }
 }

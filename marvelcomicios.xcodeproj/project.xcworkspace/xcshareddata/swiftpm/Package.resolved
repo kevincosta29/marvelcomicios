@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "8dd85aee02e39dd280c75eef88ffdb86eed4b07b",
+        "version" : "5.6.2"
+      }
+    },
+    {
+      "identity" : "alamofireimage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/AlamofireImage.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "af1c41645ef2d3ab48ffb3fb3a11941c71e5f9a0"
+      }
+    },
+    {
+      "identity" : "lottie-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-ios.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "350b177177ea4bc3d4dddb370c5493506ef1dce0"
+      }
+    },
+    {
+      "identity" : "swift-package-network",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kevincosta29/swift-package-network",
+      "state" : {
+        "branch" : "main",
+        "revision" : "88091b13568df3657f8a861b04903e231a121a4b"
+      }
+    }
+  ],
+  "version" : 2
+}
