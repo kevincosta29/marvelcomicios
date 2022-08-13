@@ -1,16 +1,4 @@
-{
-    "code": 200,
-    "status": "Ok",
-    "copyright": "© 2022 MARVEL",
-    "attributionText": "Data provided by Marvel. © 2022 MARVEL",
-    "attributionHTML": "<a href=\"http://marvel.com\">Data provided by Marvel. © 2022 MARVEL</a>",
-    "etag": "753fbf8ac1dd95c830a117fb34445ade3f1a7ced",
-    "data": {
-        "offset": 0,
-        "limit": 20,
-        "total": 4,
-        "count": 4,
-        "results": [
+ [
             {
                 "id": 47176,
                 "digitalId": 30661,
@@ -842,5 +830,3 @@
                 }
             }
         ]
-    }
-}

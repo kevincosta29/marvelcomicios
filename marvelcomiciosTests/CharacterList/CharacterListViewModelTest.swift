@@ -12,24 +12,24 @@ import KNetwork
 
 class CharacterListViewModelTest: XCTestCase {
     
-    private var session: MockURLSession!
+    private var dataSource: MockedCharacterListDataSource!
 
     override func setUpWithError() throws {
-        session = MockURLSession()
+        dataSource = MockedCharacterListDataSource()
     }
     
     func test_CharacterList_Success() throws {
         let expectation = XCTestExpectation(description: "test_CharacterList_Success")
         let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterListViewModelTest.self).url(forResource: "characterListMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let mockObjectResponse = try KParser<WSCharactersResponse>.parserData(mockDataResponse)
+        let arrayObjects = try KParser<[Character]>.parserData(mockDataResponse)
         
-        session.dataMock = mockDataResponse
+        dataSource.result = .success(arrayObjects)
         
-        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource())
+        let viewModel = CharacterListViewModel(dataSource: dataSource)
         
         viewModel.refreshData = {
-            XCTAssertEqual(viewModel.arrayCharacters.count, mockObjectResponse.data?.results.count)
+            XCTAssertEqual(viewModel.arrayCharacters.count, arrayObjects.count)
             expectation.fulfill()
         }
         
@@ -41,16 +41,12 @@ class CharacterListViewModelTest: XCTestCase {
     
     func test_CharacterListEmpty_Success() throws {
         let expectation = XCTestExpectation(description: "test_CharacterListEmpty_Success")
-        let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterListViewModelTest.self).url(forResource: "characterListEmptyMock", withExtension: "json"))
-        let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let mockObjectResponse = try KParser<WSCharactersResponse>.parserData(mockDataResponse)
+        dataSource.result = .failure(KNetworkError.error(message: "test_CharacterListEmpty_Success"))
 
-        session.dataMock = mockDataResponse
-
-        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource(session: session))
+        let viewModel = CharacterListViewModel(dataSource: dataSource)
         
         viewModel.showView = { type, msg in
-            XCTAssertEqual(viewModel.arrayCharacters.count, mockObjectResponse.data?.results.count)
+            XCTAssert(viewModel.arrayCharacters.isEmpty)
             XCTAssertEqual(type, .viewError)
             XCTAssertNotNil(msg)
             XCTAssert(!msg!.isEmpty)
@@ -65,9 +61,9 @@ class CharacterListViewModelTest: XCTestCase {
     
     func test_CharacterListNilData_Success() throws {
         let expectation = XCTestExpectation(description: "test_CharacterListNilData_Success")
-        session.dataMock = try JSONEncoder().encode(WSCharactersResponse())
+        dataSource.result = .failure(KNetworkError.error(message: "test_CharacterListNilData_Success"))
 
-        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource(session: session))
+        let viewModel = CharacterListViewModel(dataSource: dataSource)
 
         viewModel.showView = { type, msg in
             XCTAssertEqual(viewModel.arrayCharacters.count, 0)
@@ -85,13 +81,12 @@ class CharacterListViewModelTest: XCTestCase {
     
     func test_CharacterList_Failure() throws {
         let expectation = XCTestExpectation(description: "test_CharacterList_Failure")
-        let error = KNetworkError.error(message: "test_CharacterList_Failure")
-        session.error = error
+        dataSource.result = .failure(KNetworkError.error(message: "test_CharacterList_Failure"))
        
-        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource(session: session))
+        let viewModel = CharacterListViewModel(dataSource: dataSource)
         
         viewModel.showView = { type, msg in
-            XCTAssertEqual(viewModel.arrayCharacters.count, 0)
+            XCTAssert(viewModel.arrayCharacters.isEmpty)
             XCTAssertEqual(type, .viewError)
             XCTAssertNotNil(msg)
             XCTAssert(!msg!.isEmpty)

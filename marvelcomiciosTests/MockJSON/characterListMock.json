@@ -1,16 +1,4 @@
-{
-    "code": 200,
-    "status": "Ok",
-    "copyright": "© 2022 MARVEL",
-    "attributionText": "Data provided by Marvel. © 2022 MARVEL",
-    "attributionHTML": "<a href=\"http://marvel.com\">Data provided by Marvel. © 2022 MARVEL</a>",
-    "etag": "6e40bab94c3f08532c66eb1a3022fab58b4b72de",
-    "data": {
-        "offset": 0,
-        "limit": 50,
-        "total": 1559,
-        "count": 50,
-        "results": [
+[
             {
                 "id": 1011334,
                 "name": "3-D Man",
@@ -8136,5 +8124,3 @@
                 ]
             }
         ]
-    }
-}

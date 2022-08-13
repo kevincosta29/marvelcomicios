@@ -12,10 +12,10 @@ import KNetwork
 
 class CharacterDetailViewModelTest: XCTestCase {
     
-    private var session: MockURLSession!
+    private var dataSource: MockedCharacterDetailDataSource!
 
     override func setUpWithError() throws {
-        session = MockURLSession()
+        dataSource = MockedCharacterDetailDataSource()
     }
 
     override func tearDownWithError() throws { }
@@ -24,13 +24,13 @@ class CharacterDetailViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_GetComics_Success")
         let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterDetailViewModelTest.self).url(forResource: "characterComicsMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let mockObjectResponse = try KParser<WSComicsResponse>.parserData(mockDataResponse)
+        let mockObjectResponse = try KParser<[Comic]>.parserData(mockDataResponse)
         
-        session.dataMock = mockDataResponse
-        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
+        dataSource.resultComics = .success(mockObjectResponse)
+        let viewModel = CharacterDetailViewModel(dataSource: dataSource)
         
         viewModel.refreshData = {
-            XCTAssertEqual(viewModel.arrayComics.count, mockObjectResponse.data?.results?.count)
+            XCTAssertEqual(viewModel.arrayComics.count, mockObjectResponse.count)
             XCTAssertEqual(viewModel.arraySections.count, 2)
             XCTAssertEqual(viewModel.arraySections.first, .header)
             XCTAssertEqual(viewModel.arraySections.last, .comics)
@@ -45,8 +45,8 @@ class CharacterDetailViewModelTest: XCTestCase {
     
     func test_GetComicsNilData_Success() throws {
         let expectation = XCTestExpectation(description: "test_GetComicsNilData_Success")
-        session.dataMock = try JSONEncoder().encode(WSComicsResponse())
-        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
+        dataSource.resultComics = .success([])
+        let viewModel = CharacterDetailViewModel(dataSource: dataSource)
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arrayComics.count, 0)
@@ -63,9 +63,8 @@ class CharacterDetailViewModelTest: XCTestCase {
     
     func test_GetComics_Failure() throws {
         let expectation = XCTestExpectation(description: "test_GetComics_Failure")
-        session.dataMock = Data()
-        session.error = KNetworkError.error(message: "test_GetComics_Failure")
-        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
+        dataSource.resultComics = .failure(KNetworkError.error(message: "test_GetComics_Failure"))
+        let viewModel = CharacterDetailViewModel(dataSource: dataSource)
         
         viewModel.showView = { type, msg in
             XCTAssertEqual(type, .viewError)
@@ -84,13 +83,13 @@ class CharacterDetailViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_GetSeries_Success")
         let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterDetailViewModelTest.self).url(forResource: "characterSeriesMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let mockObjectResponse = try KParser<WSSeriesResponse>.parserData(mockDataResponse)
+        let mockObjectResponse = try KParser<[Serie]>.parserData(mockDataResponse)
         
-        session.dataMock = mockDataResponse
-        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
+        dataSource.resultSeries = .success(mockObjectResponse)
+        let viewModel = CharacterDetailViewModel(dataSource: dataSource)
         
         viewModel.refreshData = {
-            XCTAssertEqual(viewModel.arraySeries.count, mockObjectResponse.data?.results?.count)
+            XCTAssertEqual(viewModel.arraySeries.count, mockObjectResponse.count)
             XCTAssertEqual(viewModel.arraySections.count, 2)
             XCTAssertEqual(viewModel.arraySections.first, .header)
             XCTAssertEqual(viewModel.arraySections.last, .series)
@@ -105,8 +104,8 @@ class CharacterDetailViewModelTest: XCTestCase {
     
     func test_GetSeriesNilData_Success() throws {
         let expectation = XCTestExpectation(description: "test_GetSeriesNilData_Success")
-        session.dataMock = try JSONEncoder().encode(WSSeriesResponse())
-        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
+        dataSource.resultSeries = .success([])
+        let viewModel = CharacterDetailViewModel(dataSource: dataSource)
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arraySeries.count, 0)
@@ -123,8 +122,8 @@ class CharacterDetailViewModelTest: XCTestCase {
     
     func test_GetSeries_Failure() throws {
         let expectation = XCTestExpectation(description: "test_GetSeries_Failure")
-        session.error = KNetworkError.error(message: "test_GetSeries_Failure")
-        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
+        dataSource.resultSeries = .failure(KNetworkError.error(message: "test_GetSeries_Failure"))
+        let viewModel = CharacterDetailViewModel(dataSource: dataSource)
         
         viewModel.showView = { type, msg in
             XCTAssertEqual(type, .viewError)
