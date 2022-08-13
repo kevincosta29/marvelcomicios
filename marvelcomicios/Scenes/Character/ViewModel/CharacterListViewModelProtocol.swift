@@ -10,7 +10,7 @@ import Foundation
 
 protocol CharacterListViewModelProtocol {
     
-    var arrayCharacter: [Character] { get set }
+    var arrayCharacters: [Character] { get set }
     var refreshData: (() -> Void)? { get set }
     var showView: ((ViewType, String?) ->Void)? { get set }
     

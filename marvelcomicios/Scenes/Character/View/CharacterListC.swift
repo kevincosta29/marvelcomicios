@@ -136,7 +136,7 @@ class CharacterListC: BaseC {
 extension CharacterListC: UITableViewDelegate, UITableViewDataSource {
 	
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.arrayCharacter.count
+        return viewModel.arrayCharacters.count
 	}
 	
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -144,7 +144,7 @@ extension CharacterListC: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
-        let object = viewModel.arrayCharacter[indexPath.row]
+        let object = viewModel.arrayCharacters[indexPath.row]
 		cell.configCellWithCharacter(object, cnt: self)
 		
 		cell.setNeedsUpdateConstraints()
@@ -154,7 +154,7 @@ extension CharacterListC: UITableViewDelegate, UITableViewDataSource {
 	}
 	
 	func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let object = viewModel.arrayCharacter[indexPath.row]
+        let object = viewModel.arrayCharacters[indexPath.row]
         tableView.deselectRow(at: indexPath, animated: true)
         flowManager.goToDetail(character: object)
 	}

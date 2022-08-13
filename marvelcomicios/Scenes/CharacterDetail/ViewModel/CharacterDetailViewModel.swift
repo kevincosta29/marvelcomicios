@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KNetwork
 
 class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
     
@@ -15,6 +16,7 @@ class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
     // MARK: ============
     //-----------------------
     
+    var msgError: ((String?) -> Void)?
     var showView: ((ViewType, String?) -> Void)?
     var refreshData = { () -> () in }
     var arrayComics: [Comic] = []
@@ -34,9 +36,7 @@ class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
     // MARK: - METHODS
     //-----------------------
     
-    func retrieveContent(id: Int) {
-        createContent()
-        
+    func retrieveComics(id: Int) {
         Task {
             let responseComics = await dataSource.getComics(id: id)
             
@@ -45,16 +45,20 @@ class CharacterDetailViewModel: CharacterDetailViewModelProtocol {
                 arrayComics = array
                 createContent()
             case .failure(let error):
-                print(error.description)
+                showView?(.viewError, error.description)
             }
-            
+        }
+    }
+    
+    func retrieveSeries(id: Int) {
+        Task {
             let responseSeries = await dataSource.getSeries(id: id)
             switch responseSeries {
             case .success(let array):
                 arraySeries = array
                 createContent()
             case .failure(let error):
-                print(error.description)
+                showView?(.viewError, error.description)
             }
         }
     }

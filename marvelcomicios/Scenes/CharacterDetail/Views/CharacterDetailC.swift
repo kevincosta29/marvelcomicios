@@ -116,7 +116,9 @@ class CharacterDetailC: BaseC {
     }
     
     @objc private func retrieveData() {
-        viewModel.retrieveContent(id: character.id ?? -1)
+        guard let id = character.id else { return }
+        viewModel.retrieveSeries(id: id)
+        viewModel.retrieveComics(id: id)
     }
 	
     func showView(type: ViewType, mssgError: String? = "") {

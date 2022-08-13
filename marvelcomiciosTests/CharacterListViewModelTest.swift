@@ -7,19 +7,15 @@
 //
 
 import XCTest
+import KNetwork
 @testable import marvelcomicios
 
 class CharacterListViewModelTest: XCTestCase {
     
     private var session: MockURLSession!
-    private var mockController: BaseControllerProtocol!
 
     override func setUpWithError() throws {
-        mockController = MockViewController()
         session = MockURLSession()
-    }
-
-    override func tearDownWithError() throws {
     }
     
     func test_CharacterList_Success() throws {
@@ -30,14 +26,14 @@ class CharacterListViewModelTest: XCTestCase {
         
         session.dataMock = mockDataResponse
         
-        let viewModel = CharacterListViewModel(controller: mockController, urlSession: session)
+        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource())
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arrayCharacters.count, mockObjectResponse.data?.results.count)
             expectation.fulfill()
         }
         
-        viewModel.wsGetCharacterList()
+        viewModel.retrieveCharacterList(showLoading: false)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -51,14 +47,17 @@ class CharacterListViewModelTest: XCTestCase {
 
         session.dataMock = mockDataResponse
 
-        let viewModel = CharacterListViewModel(controller: mockController, urlSession: session)
-
-        viewModel.refreshData = {
+        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource(session: session))
+        
+        viewModel.showView = { type, msg in
             XCTAssertEqual(viewModel.arrayCharacters.count, mockObjectResponse.data?.results.count)
+            XCTAssertEqual(type, .viewError)
+            XCTAssertNotNil(msg)
+            XCTAssert(!msg!.isEmpty)
             expectation.fulfill()
         }
 
-        viewModel.wsGetCharacterList()
+        viewModel.retrieveCharacterList(showLoading: false)
 
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -68,14 +67,17 @@ class CharacterListViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_CharacterListNilData_Success")
         session.dataMock = try JSONEncoder().encode(WSCharactersResponse())
 
-        let viewModel = CharacterListViewModel(controller: mockController, urlSession: session)
+        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource(session: session))
 
-        viewModel.refreshData = {
+        viewModel.showView = { type, msg in
             XCTAssertEqual(viewModel.arrayCharacters.count, 0)
+            XCTAssertEqual(type, .viewError)
+            XCTAssertNotNil(msg)
+            XCTAssert(!msg!.isEmpty)
             expectation.fulfill()
         }
 
-        viewModel.wsGetCharacterList()
+        viewModel.retrieveCharacterList(showLoading: false)
 
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -83,25 +85,23 @@ class CharacterListViewModelTest: XCTestCase {
     
     func test_CharacterList_Failure() throws {
         let expectation = XCTestExpectation(description: "test_CharacterList_Failure")
-        session.error = KNetworkError.error(message: "test_CharacterList_Failure")
+        let error = KNetworkError.error(message: "test_CharacterList_Failure")
+        session.error = error
        
-        let viewModel = CharacterListViewModel(controller: mockController, urlSession: session)
+        let viewModel = CharacterListViewModel(dataSource: CharacterListDataSource(session: session))
         
-        viewModel.refreshData = {
+        viewModel.showView = { type, msg in
             XCTAssertEqual(viewModel.arrayCharacters.count, 0)
+            XCTAssertEqual(type, .viewError)
+            XCTAssertNotNil(msg)
+            XCTAssert(!msg!.isEmpty)
             expectation.fulfill()
         }
         
-        viewModel.wsGetCharacterList()
+        viewModel.retrieveCharacterList(showLoading: false)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
     }
 
-}
-
-class MockViewController: BaseControllerProtocol {
-    
-    func showView(type: ViewType, mssgError: String?) { }
-    
 }

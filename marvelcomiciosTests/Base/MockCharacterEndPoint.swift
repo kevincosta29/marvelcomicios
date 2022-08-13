@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import KNetwork
 @testable import marvelcomicios
 
 enum MockCharacterEndPoint: KEndpointProtocol {

@@ -7,16 +7,15 @@
 //
 
 import XCTest
+import KNetwork
 @testable import marvelcomicios
 
 class CharacterDetailViewModelTest: XCTestCase {
     
     private var session: MockURLSession!
-    private var mockController: BaseControllerProtocol!
 
     override func setUpWithError() throws {
         session = MockURLSession()
-        mockController = MockViewController()
     }
 
     override func tearDownWithError() throws { }
@@ -28,7 +27,7 @@ class CharacterDetailViewModelTest: XCTestCase {
         let mockObjectResponse = try KParser<WSComicsResponse>.parserData(mockDataResponse)
         
         session.dataMock = mockDataResponse
-        let viewModel = CharacterDetailViewModel(controller: mockController, session: session)
+        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arrayComics.count, mockObjectResponse.data?.results?.count)
@@ -38,7 +37,7 @@ class CharacterDetailViewModelTest: XCTestCase {
             expectation.fulfill()
         }
         
-        viewModel.wsGetComics(id: 50)
+        viewModel.retrieveComics(id: 50)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -47,7 +46,7 @@ class CharacterDetailViewModelTest: XCTestCase {
     func test_GetComicsNilData_Success() throws {
         let expectation = XCTestExpectation(description: "test_GetComicsNilData_Success")
         session.dataMock = try JSONEncoder().encode(WSComicsResponse())
-        let viewModel = CharacterDetailViewModel(controller: mockController, session: session)
+        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arrayComics.count, 0)
@@ -56,7 +55,7 @@ class CharacterDetailViewModelTest: XCTestCase {
             expectation.fulfill()
         }
         
-        viewModel.wsGetComics(id: 50)
+        viewModel.retrieveComics(id: 50)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -66,16 +65,16 @@ class CharacterDetailViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_GetComics_Failure")
         session.dataMock = Data()
         session.error = KNetworkError.error(message: "test_GetComics_Failure")
-        let viewModel = CharacterDetailViewModel(controller: mockController, session: session)
+        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
         
-        viewModel.refreshData = {
-            XCTAssertEqual(viewModel.arrayComics.count, 0)
-            XCTAssertEqual(viewModel.arraySections.count, 1)
-            XCTAssertEqual(viewModel.arraySections.first, .header)
+        viewModel.showView = { type, msg in
+            XCTAssertEqual(type, .viewError)
+            XCTAssertNotNil(msg)
+            XCTAssert(!msg!.isEmpty)
             expectation.fulfill()
         }
         
-        viewModel.wsGetComics(id: 50)
+        viewModel.retrieveComics(id: 50)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -88,7 +87,7 @@ class CharacterDetailViewModelTest: XCTestCase {
         let mockObjectResponse = try KParser<WSSeriesResponse>.parserData(mockDataResponse)
         
         session.dataMock = mockDataResponse
-        let viewModel = CharacterDetailViewModel(controller: mockController, session: session)
+        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arraySeries.count, mockObjectResponse.data?.results?.count)
@@ -98,7 +97,7 @@ class CharacterDetailViewModelTest: XCTestCase {
             expectation.fulfill()
         }
         
-        viewModel.wsGetSeries(id: 50)
+        viewModel.retrieveSeries(id: 50)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -107,7 +106,7 @@ class CharacterDetailViewModelTest: XCTestCase {
     func test_GetSeriesNilData_Success() throws {
         let expectation = XCTestExpectation(description: "test_GetSeriesNilData_Success")
         session.dataMock = try JSONEncoder().encode(WSSeriesResponse())
-        let viewModel = CharacterDetailViewModel(controller: mockController, session: session)
+        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
         
         viewModel.refreshData = {
             XCTAssertEqual(viewModel.arraySeries.count, 0)
@@ -116,7 +115,7 @@ class CharacterDetailViewModelTest: XCTestCase {
             expectation.fulfill()
         }
         
-        viewModel.wsGetSeries(id: 50)
+        viewModel.retrieveSeries(id: 50)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)
@@ -125,16 +124,16 @@ class CharacterDetailViewModelTest: XCTestCase {
     func test_GetSeries_Failure() throws {
         let expectation = XCTestExpectation(description: "test_GetSeries_Failure")
         session.error = KNetworkError.error(message: "test_GetSeries_Failure")
-        let viewModel = CharacterDetailViewModel(controller: mockController, session: session)
+        let viewModel = CharacterDetailViewModel(dataSource: CharacterDetailDataSource(session: session))
         
-        viewModel.refreshData = {
-            XCTAssertEqual(viewModel.arraySeries.count, 0)
-            XCTAssertEqual(viewModel.arraySections.count, 1)
-            XCTAssertEqual(viewModel.arraySections.first, .header)
+        viewModel.showView = { type, msg in
+            XCTAssertEqual(type, .viewError)
+            XCTAssertNotNil(msg)
+            XCTAssert(!msg!.isEmpty)
             expectation.fulfill()
         }
         
-        viewModel.wsGetSeries(id: 50)
+        viewModel.retrieveSeries(id: 50)
         
         let waiter = XCTWaiter.wait(for: [expectation], timeout: 5)
         XCTAssertEqual(waiter, .completed)

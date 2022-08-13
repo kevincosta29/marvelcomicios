@@ -16,7 +16,7 @@ class CharacterListViewModel: CharacterListViewModelProtocol {
     //-----------------------
     
     var refreshData: (() -> Void)?
-    var arrayCharacter: [Character] = []
+    var arrayCharacters: [Character] = []
     var showView: ((ViewType, String?) -> Void)?
     private let dataSource: CharacterListDataSourceProtocol
     
@@ -42,7 +42,7 @@ class CharacterListViewModel: CharacterListViewModelProtocol {
             
             switch response {
             case .success(let array):
-                arrayCharacter = array
+                arrayCharacters = array
                 DispatchQueue.main.async {
                     self.refreshData?()
                     self.showView?(.viewContent, nil)

@@ -16,5 +16,6 @@ protocol CharacterDetailViewModelProtocol {
     var refreshData: (() -> Void) { get set }
     var showView: ((ViewType, String?) -> Void)? { get set }
     
-    func retrieveContent(id: Int)
+    func retrieveSeries(id: Int)
+    func retrieveComics(id: Int)
 }
