@@ -7,7 +7,6 @@
 # Marvel Comics
 
 [![Swift](https://img.shields.io/badge/Swift-5.3_5.4_5.5-orange?style=flat-square)](https://img.shields.io/badge/Swift-5.3_5.4_5.5-Orange?style=flat-square) 
-[![CocoaPods Compatible](https://img.shields.io/cocoapods/v/Alamofire.svg?style=flat-square)](https://img.shields.io/cocoapods/v/Alamofire.svg)
 [![Platforms](https://img.shields.io/badge/Platforms-iOS-yellowgreen?style=flat-square)](https://img.shields.io/badge/Platforms-iOS-Green?style=flat-square)
 
 This project based on the Marvel [API](https://developer.marvel.com/docs), lists differents comics with information like:
@@ -36,8 +35,8 @@ And the minimum level of iOS VERSION for this app is **13.0**.
 
 ## Implemented functionality
 
-1. Using **MVC** patron to implement the software.
-2. Native implemented network with using [Alamofire](https://github.com/Alamofire/Alamofire).
+1. Using **MVVM** patron to implement the software.
+2. Native implemented network with using [KNetwork](https://github.com/kevincosta29/swift-package-network).
 3. Animations with [Lottie](https://lottiefiles.com).
 4. Dark mode fully operative.
 
