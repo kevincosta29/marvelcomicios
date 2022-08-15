@@ -24,7 +24,7 @@ class CharacterDetailViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_GetComics_Success")
         let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterDetailViewModelTest.self).url(forResource: "characterComicsMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let mockObjectResponse = try KParser<[Comic]>.parserData(mockDataResponse)
+        let mockObjectResponse: [Comic] = try KParser.parserData(mockDataResponse)
         
         dataSource.resultComics = .success(mockObjectResponse)
         let viewModel = CharacterDetailViewModel(dataSource: dataSource)
@@ -83,7 +83,7 @@ class CharacterDetailViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_GetSeries_Success")
         let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterDetailViewModelTest.self).url(forResource: "characterSeriesMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let mockObjectResponse = try KParser<[Serie]>.parserData(mockDataResponse)
+        let mockObjectResponse: [Serie] = try KParser.parserData(mockDataResponse)
         
         dataSource.resultSeries = .success(mockObjectResponse)
         let viewModel = CharacterDetailViewModel(dataSource: dataSource)

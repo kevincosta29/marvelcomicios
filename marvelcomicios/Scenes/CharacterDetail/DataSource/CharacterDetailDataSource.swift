@@ -36,7 +36,11 @@ class CharacterDetailDataSource: CharacterDetailDataSourceProtocol {
         
         switch response {
         case .success(let response):
-            return .success(response.data?.results ?? [])
+            if let array = response.data?.results, !array.isEmpty {
+                return .success(array)
+            } else {
+                return .failure(KNetworkError.error(message: "No data found"))
+            }
         case .failure(let error):
             return .failure(error)
         }
@@ -48,7 +52,11 @@ class CharacterDetailDataSource: CharacterDetailDataSourceProtocol {
         
         switch response {
         case .success(let response):
-            return .success(response.data?.results ?? [])
+            if let array = response.data?.results, !array.isEmpty {
+                return .success(array)
+            } else {
+                return .failure(KNetworkError.error(message: "No data found"))
+            }
         case .failure(let error):
             return .failure(error)
         }
