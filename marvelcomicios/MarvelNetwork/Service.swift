@@ -46,3 +46,10 @@ struct KParser<T: Decodable> {
         return try JSONDecoder().decode(T.self, from: data)
     }
 }
+
+struct KParserObject<T: Encodable> {
+    public static func parserObject(_ object: T) throws -> Data {
+        return try JSONEncoder().encode(object)
+    }
+}
+
