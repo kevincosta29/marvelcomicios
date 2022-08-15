@@ -22,12 +22,12 @@ class CharacterListDataSourceTest: XCTestCase {
         
         let mockCharacterUrl = try XCTUnwrap(Bundle(for: CharacterDetailViewModelTest.self).url(forResource: "characterListMock", withExtension: "json"))
         dataCharacterResponse = try Data(contentsOf: mockCharacterUrl)
-        arrayCharacter = try KParser<[Character]>.parserData(dataCharacterResponse)
+        arrayCharacter = try KParser.parserData(dataCharacterResponse)
     }
     
     func test_getListSuccess() async throws {
         let objResponse = WSCharactersResponse(code: nil, status: nil, data: WSCharactersDataResponse(offset: 0, limit: 0, total: 0, count: 0, results: arrayCharacter))
-        session.dataMock = try KParserObject.parserObject(objResponse)
+        session.dataMock = try KParser.parserObject(objResponse)
         
         let dataSource = CharacterListDataSource(session: session)
         let response = await dataSource.getCharacterList()
@@ -43,7 +43,7 @@ class CharacterListDataSourceTest: XCTestCase {
     
     func test_getListEmpty() async throws {
         let objResponse = WSCharactersResponse(code: nil, status: nil, data: WSCharactersDataResponse(offset: 0, limit: 0, total: 0, count: 0, results: []))
-        session.dataMock = try KParserObject.parserObject(objResponse)
+        session.dataMock = try KParser.parserObject(objResponse)
         
         let dataSource = CharacterListDataSource(session: session)
         let response = await dataSource.getCharacterList()

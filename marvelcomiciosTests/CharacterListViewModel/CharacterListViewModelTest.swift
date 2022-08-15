@@ -22,7 +22,7 @@ class CharacterListViewModelTest: XCTestCase {
         let expectation = XCTestExpectation(description: "test_CharacterList_Success")
         let mockUrlResponse = try XCTUnwrap(Bundle(for: CharacterListViewModelTest.self).url(forResource: "characterListMock", withExtension: "json"))
         let mockDataResponse = try Data(contentsOf: mockUrlResponse)
-        let arrayObjects = try KParser<[Character]>.parserData(mockDataResponse)
+        let arrayObjects: [Character] = try KParser.parserData(mockDataResponse)
         
         dataSource.result = .success(arrayObjects)
         
